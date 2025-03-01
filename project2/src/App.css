@@ -1,0 +1,10 @@
+h1{
+ color: blue;
+ display: flex;
+ justify-content: center;
+}
+button{
+    color: blue;
+    display: flex;
+    justify-content: center;
+}
