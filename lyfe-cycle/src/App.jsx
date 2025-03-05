@@ -77,12 +77,12 @@ import React from "react";
 import "./App.css";
 import { Component } from "react";
 
-class message extends Component{
+class Message extends Component{
   componentWillUnmount(){
     console.log('message component being removed')
   }
   render(){
-    return<p>hello iam here</p>
+    return <p>hello iam here</p>
   }
 }
 
@@ -93,13 +93,14 @@ class App extends Component{
   };
   render(){
     return(
-      <>
+    
+      <div className="container">
        <button onClick={this.togglemessage}>
          {this.state.show?"remove message":"show message"}
       </button>
-         {this.state.show&&<message/>}
-         </>
-    )
+         {this.state.show&&<Message />}
+         </div>
+    );
   }
 }
 export default App

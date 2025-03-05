@@ -1,0 +1,37 @@
+body {
+  background-color: #111827; /* Dark background */
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: #1f2937;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 600px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #3b82f6;
+}
+
+.user-card {
+  background: #374151;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+.user-card:hover {
+  transform: scale(1.05);
+}
