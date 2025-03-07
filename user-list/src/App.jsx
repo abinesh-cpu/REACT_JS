@@ -10,7 +10,7 @@ class App extends React.Component{
     }
   }
   componentDidMount(){
-    fetch("./users.json")
+    fetch("http://localhost:3000/users")
     .then((response)=>response.json())
     .then((data)=>this.setState({users:data}))
     .catch((error)=>console.error("error fetching users :",error))
