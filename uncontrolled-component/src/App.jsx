@@ -5,8 +5,7 @@ class App extends React.Component{
   constructor(){
     super()
       this.myref=React.createRef()
-      }
-  handlechange=(event)=>{
+      }  handlechange=(event)=>{
     event.preventDefault()
    alert('you typed' + this.myref.current.value) 
   }
