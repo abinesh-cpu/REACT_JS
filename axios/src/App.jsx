@@ -8,7 +8,8 @@ function App(){
     .then((response)=>{
       console.log(response)
       setPosts(response.data);
-  })
+  }
+)
   .catch(errors=>console.log(errors))
 },[])
 const handlepost=()=>{
@@ -20,7 +21,7 @@ const handlepost=()=>{
   .then((response)=>{
       console.log(response)
       const newpost={
-        ...response.data,id:Math.max(...posts.map(post=>post.id))
+        ...response.data,id:Math.max(...posts.map(post=>post.id))+1
       }
       console.log([newpost,...posts])
       setPosts([newpost,...posts])
@@ -56,6 +57,15 @@ const handlepatch=(postidforpatch)=>{
     console.log(updatedpost)
   })
   .catch(error=>console.log(error))
+}
+const handledelete=async(postidfordelete)=>{
+  try{
+ const response=await axios.delete(`https://jsonplaceholder.typicode.com/posts/${postidfordelete}`)
+  console.log(response.data)
+  setPosts(posts.filter((post)=>post.id !==postidfordelete))
+}
+catch(error){
+}
 }
 return(
   <>
