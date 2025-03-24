@@ -1,19 +1,18 @@
 import React from "react";
 
-function TaskList({ tasks, deleteTask, editTask }) {
+function ListTask({ tasks, deleteTask, editTask }) {
   return (
     <div className="task-list">
-        <h1>TASK LIST</h1>
-      {tasks.map((t, index) => (
-        <div key={index} className={`task ${t.completed ? "completed" : ""}`}>
+      <h1>Task List</h1>
+      {tasks.map((task) => (
+        <div key={task.id} className={`task ${task.completed ? "completed" : ""}`}>
           <div className="task-content">
-            <span className="task-title">{t.text}</span>
-            <p className="task-desc">{t.description}</p>
+            <span className="task-title">{task.text}</span>
+            <p className="task-desc">{task.description}</p>
           </div>
           <div className="task-actions">
-            {/* <button onClick={() => toggleTask(index)}>✔</button> */}
-            <button onClick={() => editTask(index)}>✏</button>
-            <button onClick={() => deleteTask(index)}>❌</button>
+            <button onClick={() => editTask(task.id)}>Edit</button>
+            <button onClick={()  => window.confirm("Are you sure you want to delete this task?") && deleteTask(task.id)}>Delete</button>
           </div>
         </div>
       ))}
@@ -21,4 +20,4 @@ function TaskList({ tasks, deleteTask, editTask }) {
   );
 }
 
-export default TaskList;
+export default ListTask;

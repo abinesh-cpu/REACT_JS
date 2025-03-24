@@ -1,129 +1,96 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import AddTask from "./components/Addtask";
 import ListTask from "./components/listtask";
-import './App.css';
+import "./App.css";
 
 export default function TodoList() {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
+  const [editingId, setEditingId] = useState(null);  // Track if a task is being edited
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = () => {
+    axios
+      .get("http://127.0.0.1:8000/api/task/")
+      .then((response) => {
+        setTasks(response.data.map((t) => ({
+          id: t.id,
+          text: t.title,
+          description: t.description || "No description",
+          completed: t.completed
+        })));
+      })
+      .catch((error) => console.error("Error fetching tasks:", error));
+  };
 
   const addTask = () => {
-    if (task.trim() !== "" && description.trim() !== "") {
-      setTasks([...tasks, { text: task, description, completed: false }]);
-      setTask("");
-      setDescription("");
+    if (task.trim() && description.trim()) {
+      const newTask = { title: task, description, completed: false };
+
+      if (editingId) {
+        // Update existing task
+        axios.put(`http://127.0.0.1:8000/api/task/${editingId}/`, newTask)
+          .then((response) => {
+            setTasks(tasks.map((t) => (t.id === editingId ? { ...response.data, text: response.data.title } : t)));
+            resetTaskFields();
+          })
+          .catch((error) => console.error("Error updating task:", error));
+      } else {
+        // Add new task
+        axios.post("http://127.0.0.1:8000/api/task/", newTask)
+          .then((response) => {
+            setTasks([...tasks, { ...response.data, text: response.data.title }]);
+            resetTaskFields();
+          })
+          .catch((error) => console.error("Error adding task:", error));
+      }
     }
   };
 
-  // const toggleTask = (index) => {
-  //   const newTasks = [...tasks];
-  //   newTasks[index].completed = !newTasks[index].completed;
-  //   setTasks(newTasks);
-  // };
-
-  const deleteTask = (index) => {
-    setTasks(tasks.filter((_, i) => i !== index));
+  const deleteTask = (id) => {
+    axios.delete(`http://127.0.0.1:8000/api/task/${id}/`)
+      .then(() => {
+        setTasks(tasks.filter((task) => task.id !== id));
+      })
+      .catch((error) => console.error("Error deleting task:", error));
   };
 
-  const editTask = (index) => {
-    const taskToEdit = tasks[index];
-    setTask(taskToEdit.text);
-    setDescription(taskToEdit.description);
-    deleteTask(index);
+  const editTask = (id) => {
+    const taskToEdit = tasks.find((t) => t.id === id);
+    if (taskToEdit) {
+      setTask(taskToEdit.text);
+      setDescription(taskToEdit.description);
+      setEditingId(id);  // Store the task ID for updating
+    }
+  };
+
+  const resetTaskFields = () => {
+    setTask("");
+    setDescription("");
+    setEditingId(null);
   };
 
   return (
     <div className="todo-container">
       <h1>To-Do List</h1>
-      <AddTask task={task} setTask={setTask} description={description} setDescription={setDescription} addTask={addTask} />
-      <ListTask tasks={tasks} deleteTask={deleteTask} editTask={editTask} />
+      <AddTask
+        task={task}
+        setTask={setTask}
+        description={description}
+        setDescription={setDescription}
+        addTask={addTask}
+        isEditing={editingId !== null}  // Indicate edit mode
+      />
+      <ListTask
+        tasks={tasks}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-// import './App.css';
-// import AddTask from "./AddTask";
-// import TaskList from "./TaskList";
-
-// export default function TodoList() {
-//   const [tasks, setTasks] = useState([]);
-//   const [task, setTask] = useState("");
-//   const [description, setDescription] = useState("");
-
-//   // Fetch tasks from API on component mount
-//   useEffect(() => {
-//     axios
-//       .get("https://jsonplaceholder.typicode.com/todos?_limit=5") // Example API
-//       .then((response) => {
-//         const formattedTasks = response.data.map((t) => ({
-//           text: t.title,
-//           description: "No description",
-//           completed: t.completed,
-//         }));
-//         setTasks(formattedTasks);
-//       })
-//       .catch((error) => console.error("Error fetching tasks:", error));
-//   }, []);
-
-//   // Add Task
-//   const addTask = () => {
-//     if (task.trim() !== "" && description.trim() !== "") {
-//       const newTask = { text: task, description, completed: false };
-
-//       axios
-//         .post("https://jsonplaceholder.typicode.com/todos", newTask)
-//         .then((response) => {
-//           setTasks([...tasks, response.data]);
-//           setTask("");
-//           setDescription("");
-//         })
-//         .catch((error) => console.error("Error adding task:", error));
-//     }
-//   };
-
-//   // Toggle Task Completion
-//   const toggleTask = (index) => {
-//     const newTasks = [...tasks];
-//     newTasks[index].completed = !newTasks[index].completed;
-//     setTasks(newTasks);
-//   };
-
-//   // Delete Task
-//   const deleteTask = (index) => {
-//     axios
-//       .delete(`https://jsonplaceholder.typicode.com/todos/${index}`)
-//       .then(() => {
-//         setTasks(tasks.filter((_, i) => i !== index));
-//       })
-//       .catch((error) => console.error("Error deleting task:", error));
-//   };
-
-//   // Edit Task
-//   const editTask = (index) => {
-//     const taskToEdit = tasks[index];
-//     setTask(taskToEdit.text);
-//     setDescription(taskToEdit.description);
-//     deleteTask(index);
-//   };
-
-//   return (
-//     <div className="todo-container">
-//       <h1>To-Do List</h1>
-//       <AddTask task={task} setTask={setTask} description={description} setDescription={setDescription} addTask={addTask} />
-//       <TaskList tasks={tasks} toggleTask={toggleTask} deleteTask={deleteTask} editTask={editTask} />
-//     </div>
-//   );
-// }
